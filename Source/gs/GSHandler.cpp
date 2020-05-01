@@ -736,13 +736,12 @@ std::pair<uint32, uint32> CGSHandler::GetTransferInvalidationRange(const BITBLTB
 	}
 
 	uint32 pageCountX = (width + transferPageSize.first - 1) / transferPageSize.first;
-	uint32 pageCountY = (trxReg.nRRH + transferPageSize.second - 1) / transferPageSize.second;
+	uint32 pageCountY = (trxPos.nDSAY + trxReg.nRRH + transferPageSize.second - 1) / transferPageSize.second;
 
 	uint32 pageCount = pageCountX * pageCountY;
 	uint32 transferSize = pageCount * CGsPixelFormats::PAGESIZE;
-	uint32 transferOffset = (trxPos.nDSAY / transferPageSize.second) * pageCountX * CGsPixelFormats::PAGESIZE;
 
-	return std::make_pair(transferAddress + transferOffset, transferSize);
+	return std::make_pair(transferAddress, transferSize);
 }
 
 void CGSHandler::BeginTransfer()
