@@ -82,6 +82,7 @@ namespace VUShared
 	enum COMPILEHINT
 	{
 		COMPILEHINT_SKIPFMACUPDATE = 0x01,
+		COMPILEHINT_UPDATESTICKY = 0x2,
 	};
 
 	int32 GetImm11Offset(uint16);

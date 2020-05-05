@@ -177,10 +177,13 @@ void VUShared::TestSZFlags(CMipsJitter* codeGen, uint8 dest, size_t regOffset, u
 	}
 
 	//Update sticky flags
-	codeGen->PushTop();
-	codeGen->PushRel(offsetof(CMIPS, m_State.nCOP2SF));
-	codeGen->Or();
-	codeGen->PullRel(offsetof(CMIPS, m_State.nCOP2SF));
+	if(compileHints & COMPILEHINT_UPDATESTICKY)
+	{
+		codeGen->PushTop();
+		codeGen->PushRel(offsetof(CMIPS, m_State.nCOP2SF));
+		codeGen->Or();
+		codeGen->PullRel(offsetof(CMIPS, m_State.nCOP2SF));
+	}
 
 	if((compileHints & COMPILEHINT_SKIPFMACUPDATE) == 0)
 	{
@@ -567,6 +570,8 @@ void VUShared::ADDbc(CMipsJitter* codeGen, uint8 nDest, uint8 nFd, uint8 nFs, ui
 
 	if(nFd == 0)
 	{
+		compileHints |= COMPILEHINT_UPDATESTICKY;
+
 		//Use the temporary register to store the result
 		nFd = 32;
 	}
@@ -1511,6 +1516,10 @@ void VUShared::SQRT(CMipsJitter* codeGen, uint8 nFt, uint8 nFtf, uint32 relative
 
 void VUShared::SUB(CMipsJitter* codeGen, uint8 dest, uint8 fd, uint8 fs, uint8 ft, uint32 relativePipeTime, uint32 compileHints)
 {
+	if(fd == 0)
+	{
+		compileHints |= COMPILEHINT_UPDATESTICKY;
+	}
 	auto fdOffset = offsetof(CMIPS, m_State.nCOP2[(fd != 0) ? fd : 32]);
 	if(fs == ft)
 	{
